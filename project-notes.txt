@@ -1,0 +1,253 @@
+Build and maintain a complete Spring Boot project named **HabitForge – Personal Habit Streak Tracker with Reminders**.
+
+### Project Requirements
+
+Use:
+
+* Java 17
+* Spring Boot 3.5.5
+* Spring Web
+* Spring Data JPA
+* Spring Boot Validation
+* MySQL
+* Maven
+* HTML, CSS and JavaScript for frontend
+
+Package:
+`com.example.habitforge`
+
+Server port:
+`8085`
+
+Database:
+`Habitforge`
+
+### Main Purpose
+
+HabitForge helps users create personal habits, mark them as completed, track current and best streaks, view monthly completion history, and receive a simple daily reminder.
+
+### Backend Entities
+
+Create and maintain these entities:
+
+1. **Habit**
+
+   * habitId
+   * name
+   * description
+   * frequencyType
+   * targetDays
+   * startDate
+   * active
+   * relationship with CompletionLog
+   * relationship with Streak
+
+2. **CompletionLog**
+
+   * completionId
+   * habit
+   * completionDate
+   * status
+   * prevent duplicate completion for the same habit and date
+
+3. **Streak**
+
+   * streakId
+   * habit
+   * currentStreak
+   * bestStreak
+   * lastCompletedDate
+   * updatedAt
+
+### Habit Features
+
+Support:
+
+* Create habit
+* View all habits
+* View one habit
+* Update habit
+* Delete habit
+* Daily frequency
+* Specific weekday frequency
+* Start date
+* Active/inactive status
+
+### Completion Features
+
+Allow users to mark a habit as completed for a selected date.
+
+Business rules:
+
+* Do not allow future completion dates.
+* Do not allow duplicate completion for the same habit and date.
+* Only required days should affect streak calculation.
+* Handle missed required days correctly.
+* Return clear validation/error messages.
+
+### Streak Features
+
+Calculate:
+
+* Current streak
+* Best streak ever
+* Last completed date
+
+Rules:
+
+* Current streak should reset when a required day is missed.
+* The current day should not be treated as missed before the day ends.
+* Future completion dates must not affect streaks.
+* Best streak should never decrease.
+* Best streak should update only when the current streak becomes higher than the previous best.
+
+### Calendar Feature
+
+Provide a monthly calendar for each habit.
+
+For each date show one of:
+
+* `COMPLETED`
+* `MISSED`
+* `UPCOMING`
+* `NOT_REQUIRED`
+* `NOT_STARTED`
+
+Calendar should respect:
+
+* Habit start date
+* Daily or selected weekday frequency
+* Completion logs
+* Current date
+
+### Reminder Feature
+
+Provide a reminder endpoint for each habit.
+
+If today's required completion is not done:
+`Remember to complete your habit today.`
+
+If today's habit is already completed:
+`You have already completed your habit today.`
+
+### REST API
+
+Use:
+
+`/api/habits`
+
+Endpoints:
+
+* POST `/api/habits`
+* GET `/api/habits`
+* GET `/api/habits/{id}`
+* PUT `/api/habits/{id}`
+* DELETE `/api/habits/{id}`
+* POST `/api/habits/{id}/complete`
+* GET `/api/habits/{id}/streak`
+* GET `/api/habits/{id}/calendar?month=yyyy-MM`
+* GET `/api/habits/{id}/reminder`
+
+Use proper HTTP status codes and meaningful error messages.
+
+### Validation
+
+Use Jakarta Validation.
+
+Validate:
+
+* Habit name required
+* Maximum name length
+* Maximum description length
+* Frequency required
+* Start date required
+* Invalid completion requests
+* Invalid calendar month format
+
+Use a global exception handler with `@ControllerAdvice`.
+
+Do not remove validation just to hide compilation errors.
+
+### Frontend
+
+Create a simple professional frontend at:
+
+`src/main/resources/static/index.html`
+
+Frontend should contain:
+
+* Add New Habit
+* My Habits
+* Complete Today
+* View Streak
+* View Calendar
+* View Reminder
+* Delete Habit
+
+Display the actual generated Habit ID automatically.
+
+Do not ask the user to manually enter Habit ID.
+
+Frontend should communicate with the Spring Boot REST API using JavaScript fetch calls.
+
+### Frontend Design
+
+Use a professional **dark red and black theme**.
+
+Requirements:
+
+* Black/dark charcoal background
+* Dark red accent
+* Dark red buttons
+* Red hover effects
+* Dark cards
+* Light text
+* Red input borders/focus
+* Completed calendar days highlighted in red
+* Dark red reminder section
+* Dark red delete button
+* Responsive design
+* Clean and simple layout
+* No emojis
+
+Do not change the existing API functionality while modifying the design.
+
+### Important
+
+Preserve all existing working functionality.
+
+Do not unnecessarily change:
+
+* Controllers
+* Services
+* Repositories
+* Entities
+* DTOs
+* API URLs
+* Business logic
+* Database relationships
+
+If something is already working, do not rewrite it unnecessarily.
+
+Before finishing, verify:
+
+1. Application starts successfully.
+2. MySQL connection works.
+3. Add Habit works.
+4. Complete Today works.
+5. Duplicate completion is rejected.
+6. Future completion is rejected.
+7. View Streak works.
+8. View Calendar works.
+9. View Reminder works.
+10. Delete Habit works.
+11. Validation works.
+12. Maven compilation succeeds.
+
+Run:
+
+`mvn clean compile`
+
+and confirm `BUILD SUCCESS`.
+
+The final project must satisfy the original **HabitForge Personal Habit Streak Tracker with Reminders** problem statement while keeping the implementation simple and suitable for a college project demonstration.
