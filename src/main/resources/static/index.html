@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HabitForge - Personal Habit Tracker</title>
+
+    <style>
+
+        :root {
+            color-scheme: dark;
+            --page: #101011;
+            --surface: #1a1718;
+            --surface-raised: #211a1b;
+            --surface-inset: #141213;
+            --border: #3b2b2e;
+            --accent: #842637;
+            --accent-hover: #a63849;
+            --text: #f2eded;
+            --muted: #b9adaf;
+            --muted-soft: #948689;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #191516 0, var(--page) 320px);
+            color: var(--text);
+        }
+
+        header {
+            background: linear-gradient(115deg, #191516, #2d171b 62%, #3d1820);
+            color: var(--text);
+            text-align: center;
+            padding: 36px 20px;
+            border-bottom: 1px solid #49232b;
+        }
+
+        header h1 {
+            font-size: 34px;
+            margin-bottom: 8px;
+            color: #f7eff0;
+        }
+
+        header p {
+            font-size: 16px;
+            color: #c5adb1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 28px;
+            margin-bottom: 25px;
+            border: 1px solid #302528;
+            border-radius: 8px;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            padding-left: 12px;
+            border-left: 3px solid #a33a4b;
+            color: #f0e8e9;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #d3c6c8;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #49343a;
+            border-radius: 6px;
+            font-size: 15px;
+            background: var(--surface-inset);
+            color: var(--text);
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #a43a4c;
+            box-shadow: 0 0 0 3px rgba(164, 58, 76, 0.2);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #827477;
+        }
+
+        select option {
+            background: var(--surface-inset);
+            color: var(--text);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+            margin-top: 8px;
+            color: #fff5f6;
+            background: var(--button-bg, var(--accent));
+            transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        }
+
+        button:hover {
+            background: var(--button-hover, var(--accent-hover));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+        }
+
+        button:focus-visible {
+            outline: 2px solid #d06a78;
+            outline-offset: 2px;
+        }
+
+        .add-btn {
+            width: 100%;
+            --button-bg: #792332;
+            --button-hover: #a63849;
+            font-weight: bold;
+        }
+
+        .complete-btn {
+            --button-bg: #6b2632;
+            --button-hover: #943746;
+        }
+
+        .streak-btn {
+            --button-bg: #57232d;
+            --button-hover: #80313e;
+        }
+
+        .calendar-btn {
+            --button-bg: #692532;
+            --button-hover: #943746;
+        }
+
+        .reminder-btn {
+            --button-bg: #742433;
+            --button-hover: #a03949;
+        }
+
+        .delete-btn {
+            --button-bg: #451820;
+            --button-hover: #742431;
+        }
+
+        .habit {
+            border: 1px solid #3a292d;
+            background: var(--surface-raised);
+            padding: 22px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .habit h3 {
+            color: #edc6cc;
+            margin-bottom: 12px;
+            font-size: 21px;
+        }
+
+        .habit-id {
+            display: inline-block;
+            margin: 0 0 14px;
+            padding: 7px 10px;
+            border: 1px solid #64303a;
+            border-radius: 5px;
+            background: #30181e;
+            color: #f0c2ca;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .habit p {
+            margin: 8px 0;
+            color: var(--muted);
+        }
+
+        .actions {
+            margin-top: 12px;
+        }
+
+        .streak {
+            margin-top: 15px;
+            padding: 13px;
+            background: #2a1a1e;
+            border: 1px solid #4b2931;
+            border-radius: 6px;
+            color: #e4d5d8;
+        }
+
+        .reminder {
+            margin-top: 15px;
+            padding: 14px;
+            background: #30181e;
+            border: 1px solid #532631;
+            border-left: 4px solid #a43a4c;
+            border-radius: 6px;
+            color: #f0dfe2;
+        }
+
+        /* CALENDAR */
+
+        .calendar {
+            margin-top: 18px;
+            padding: 20px;
+            background: #171415;
+            border: 1px solid #39292d;
+            border-radius: 8px;
+        }
+
+        .calendar h3 {
+            color: #edc6cc;
+            margin-bottom: 18px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: bold;
+            color: #b9a8ac;
+            padding: 8px 3px;
+            font-size: 13px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            min-height: 75px;
+            padding: 8px 4px;
+            text-align: center;
+            border-radius: 9px;
+            font-size: 11px;
+            border: 1px solid #3b2b2f;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .day-number {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .day-symbol {
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 20px;
+        }
+
+        .day-status {
+            font-size: 9px;
+            margin-top: 4px;
+            word-break: break-word;
+        }
+
+        .completed {
+            background: #64232f;
+            border-color: #98404d;
+            color: #ffe9ec;
+        }
+
+        .missed {
+            background: #482027;
+            border-color: #71303b;
+            color: #edc4ca;
+        }
+
+        .upcoming {
+            background: #292426;
+            color: #cec3c5;
+        }
+
+        .not-required {
+            background: #211e20;
+            color: #a99da0;
+        }
+
+        .not-started {
+            background: #191718;
+            color: #b7aaad;
+        }
+
+        .calendar-legend {
+            margin-top: 18px;
+            padding: 12px;
+            background: #201b1d;
+            border: 1px solid #38282c;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #c7babc;
+            line-height: 2;
+        }
+
+        .legend-item {
+            margin-right: 12px;
+            white-space: nowrap;
+        }
+
+        #message {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted-soft);
+            padding: 25px;
+            background: #171516;
+            border: 1px solid #302528;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                width: calc(100% - 28px);
+                margin: 18px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .calendar-grid,
+            .calendar-weekdays {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+            }
+
+            .calendar-day {
+                min-height: 55px;
+                padding: 5px 2px;
+            }
+
+            .day-status {
+                display: none;
+            }
+
+            .day-symbol {
+                font-size: 16px;
+            }
+
+            header {
+                padding: 28px 16px;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            button {
+                width: 100%;
+                margin-right: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>HabitForge</h1>
+
+    <p>
+        Personal Habit Streak Tracker
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- ADD HABIT -->
+
+    <div class="card">
+
+        <h2>Add New Habit</h2>
+
+        <div id="message"></div>
+
+        <form id="habitForm">
+
+
+            <div class="form-group">
+
+                <label>
+                    Habit Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Example: Reading"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    rows="3"
+                    placeholder="Example: Read for 20 minutes"></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Frequency
+                </label>
+
+                <select id="frequencyType">
+
+                    <option value="DAILY">
+                        Daily
+                    </option>
+
+                    <option value="SPECIFIC_WEEKDAYS">
+                        Specific Weekdays
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    id="startDate"
+                    required>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="add-btn">
+
+                Add Habit
+
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+    <!-- HABIT LIST -->
+
+    <div class="card">
+
+        <h2>
+            My Habits
+        </h2>
+
+        <div id="habitList">
+
+            <div class="empty">
+                Loading habits...
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    const API_URL = "/api/habits";
+
+
+    const habitForm =
+        document.getElementById("habitForm");
+
+    const habitList =
+        document.getElementById("habitList");
+
+    const message =
+        document.getElementById("message");
+
+
+    loadHabits();
+
+
+    // --------------------------------
+    // ADD HABIT
+    // --------------------------------
+
+    habitForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const habit = {
+
+                name:
+                    document.getElementById("name")
+                        .value.trim(),
+
+                description:
+                    document.getElementById("description")
+                        .value.trim(),
+
+                frequencyType:
+                    document.getElementById("frequencyType")
+                        .value,
+
+                startDate:
+                    document.getElementById("startDate")
+                        .value,
+
+                active: true
+            };
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(habit)
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Failed to create habit"
+                    );
+
+                }
+
+
+                message.style.color =
+                    "#3f7d50";
+
+                message.textContent =
+                    "Habit created successfully.";
+
+
+                habitForm.reset();
+
+                loadHabits();
+
+
+            } catch (error) {
+
+                message.style.color =
+                    "#a94442";
+
+                message.textContent =
+                    error.message;
+
+            }
+
+        }
+    );
+
+
+    // --------------------------------
+    // LOAD HABITS
+    // --------------------------------
+
+    async function loadHabits() {
+
+        try {
+
+            const response =
+                await fetch(API_URL);
+
+
+            const habits =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load habits"
+                );
+
+            }
+
+
+            displayHabits(habits);
+
+
+        } catch (error) {
+
+            habitList.innerHTML = `
+                <div class="empty">
+                    Cannot connect to backend.
+                </div>
+            `;
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    // --------------------------------
+    // DISPLAY HABITS
+    // --------------------------------
+
+    function displayHabits(habits) {
+
+        if (habits.length === 0) {
+
+            habitList.innerHTML = `
+                <div class="empty">
+                    No habits added yet.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        habitList.innerHTML = "";
+
+
+        habits.forEach(habit => {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "habit";
+
+
+            div.innerHTML = `
+
+                <h3>
+                    ${escapeHtml(habit.name)}
+                </h3>
+
+                <p class="habit-id">
+                    <strong>Habit ID:</strong>
+                    ${escapeHtml(habit.habitId)}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    ${escapeHtml(
+                        habit.description ||
+                        "No description"
+                    )}
+                </p>
+
+
+                <p>
+                    <strong>Frequency:</strong>
+                    ${escapeHtml(
+                        habit.frequencyType
+                    )}
+                </p>
+
+
+                <p>
+                    <strong>Start Date:</strong>
+                    ${escapeHtml(
+                        habit.startDate
+                    )}
+                </p>
+
+
+                <div class="actions">
+
+                    <button
+                        class="complete-btn"
+                        onclick="completeHabit(${habit.habitId})">
+
+                        Complete Today
+
+                    </button>
+
+
+                    <button
+                        class="streak-btn"
+                        onclick="viewStreak(${habit.habitId})">
+
+                        View Streak
+
+                    </button>
+
+
+                    <button
+                        class="calendar-btn"
+                        onclick="viewCalendar(${habit.habitId})">
+
+                        View Calendar
+
+                    </button>
+
+
+                    <button
+                        class="reminder-btn"
+                        onclick="viewReminder(${habit.habitId})">
+
+                        View Reminder
+
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteHabit(${habit.habitId})">
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="streak"
+                    id="streak-${habit.habitId}">
+
+                    Streak information will appear here.
+
+                </div>
+
+
+                <div
+                    id="reminder-${habit.habitId}">
+
+                </div>
+
+
+                <div
+                    id="calendar-${habit.habitId}">
+
+                </div>
+
+            `;
+
+
+            habitList.appendChild(div);
+
+        });
+
+    }
+
+
+    // --------------------------------
+    // COMPLETE HABIT
+    // --------------------------------
+
+    async function completeHabit(id) {
+
+        try {
+
+            const today =
+                getLocalDate();
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/${id}/complete`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                completionDate:
+                                    today
+                            })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to complete habit"
+                );
+
+            }
+
+
+            alert(
+                "Habit completed successfully."
+            );
+
+
+            viewStreak(id);
+
+            viewReminder(id);
+
+
+            const calendarBox =
+                document.getElementById(
+                    `calendar-${id}`
+                );
+
+            if (calendarBox.innerHTML.trim() !== "") {
+
+                viewCalendar(id);
+
+            }
+
+
+        } catch (error) {
+
+            alert(error.message);
+
+        }
+
+    }
+
+
+    // --------------------------------
+    // VIEW STREAK
+    // --------------------------------
+
+    async function viewStreak(id) {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/${id}/streak`
+                );
+
+
+            const streak =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    streak.message ||
+                    "Unable to get streak"
+                );
+
+            }
+
+
+            const element =
+                document.getElementById(
+                    `streak-${id}`
+                );
+
+
+            element.innerHTML = `
+
+                <strong>
+                    Current Streak:
+                </strong>
+
+                ${streak.currentStreak}
+
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+
+                <strong>
+                    Best Streak:
+                </strong>
+
+                ${streak.bestStreak}
+
+                <br><br>
+
+                <strong>
+                    Last Completed:
+                </strong>
+
+                ${streak.lastCompletedDate ||
+                    "Not completed yet"}
+
+            `;
+
+
+        } catch (error) {
+
+            alert(error.message);
+
+        }
+
+    }
+
+
+    // --------------------------------
+    // VIEW REMINDER
+    // --------------------------------
+
+    async function viewReminder(id) {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/${id}/reminder`
+                );
+
+
+            const reminder =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    reminder.message ||
+                    "Unable to load reminder"
+                );
+
+            }
+
+
+            const element =
+                document.getElementById(
+                    `reminder-${id}`
+                );
+
+
+            element.innerHTML = `
+
+                <div class="reminder">
+
+                    <strong>
+                        Reminder
+                    </strong>
+
+                    <br><br>
+
+                    ${escapeHtml(
+                        reminder.message
+                    )}
+
+                    <br><br>
+
+                    <strong>
+                        Date:
+                    </strong>
+
+                    ${escapeHtml(
+                        reminder.date
+                    )}
+
+                </div>
+
+            `;
+
+
+        } catch (error) {
+
+            alert(error.message);
+
+        }
+
+    }
+
+
+    // --------------------------------
+    // VIEW CALENDAR
+    // --------------------------------
+
+    async function viewCalendar(id) {
+
+        try {
+
+            const now =
+                new Date();
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                String(
+                    now.getMonth() + 1
+                ).padStart(2, "0");
+
+
+            const currentMonth =
+                `${year}-${month}`;
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/${id}/calendar?month=${currentMonth}`
+                );
+
+
+            const calendar =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    calendar.message ||
+                    "Unable to load calendar"
+                );
+
+            }
+
+
+            const element =
+                document.getElementById(
+                    `calendar-${id}`
+                );
+
+
+            const firstDate =
+                new Date(
+                    year,
+                    now.getMonth(),
+                    1
+                );
+
+
+            const firstDay =
+                firstDate.getDay();
+
+
+            const daysInMonth =
+                new Date(
+                    year,
+                    now.getMonth() + 1,
+                    0
+                ).getDate();
+
+
+            const statusMap = {};
+
+
+            calendar.forEach(day => {
+
+                statusMap[day.date] =
+                    day.status;
+
+            });
+
+
+            let html = `
+
+                <div class="calendar">
+
+                    <h3>
+                        Calendar - ${currentMonth}
+                    </h3>
+
+
+                    <div class="calendar-weekdays">
+
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+
+                    </div>
+
+
+                    <div class="calendar-grid">
+
+            `;
+
+
+            for (
+                let i = 0;
+                i < firstDay;
+                i++
+            ) {
+
+                html += `
+                    <div></div>
+                `;
+
+            }
+
+
+            for (
+                let dayNumber = 1;
+                dayNumber <= daysInMonth;
+                dayNumber++
+            ) {
+
+                const dateString =
+                    `${year}-${month}-${String(dayNumber).padStart(2, "0")}`;
+
+
+                const status =
+                    statusMap[dateString] ||
+                    "NOT_STARTED";
+
+
+                let cssClass =
+                    "not-started";
+
+                let symbol =
+                    "•";
+
+
+                if (
+                    status === "COMPLETED"
+                ) {
+
+                    cssClass =
+                        "completed";
+
+                    symbol =
+                        "✓";
+
+                }
+
+                else if (
+                    status === "MISSED"
+                ) {
+
+                    cssClass =
+                        "missed";
+
+                    symbol =
+                        "✗";
+
+                }
+
+                else if (
+                    status === "UPCOMING"
+                ) {
+
+                    cssClass =
+                        "upcoming";
+
+                    symbol =
+                        "—";
+
+                }
+
+                else if (
+                    status === "NOT_REQUIRED"
+                ) {
+
+                    cssClass =
+                        "not-required";
+
+                    symbol =
+                        "–";
+
+                }
+
+
+                html += `
+
+                    <div
+                        class="calendar-day ${cssClass}"
+                        title="${status}">
+
+                        <div class="day-number">
+                            ${dayNumber}
+                        </div>
+
+                        <div class="day-symbol">
+                            ${symbol}
+                        </div>
+
+                        <div class="day-status">
+                            ${status}
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            html += `
+
+                    </div>
+
+
+                    <div class="calendar-legend">
+
+                        <strong>
+                            Legend
+                        </strong>
+
+                        <br>
+
+                        <span class="legend-item">
+                            ✓ Completed
+                        </span>
+
+                        <span class="legend-item">
+                            ✗ Missed
+                        </span>
+
+                        <span class="legend-item">
+                            — Upcoming
+                        </span>
+
+                        <span class="legend-item">
+                            – Not Required
+                        </span>
+
+                        <span class="legend-item">
+                            • Not Started
+                        </span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            element.innerHTML =
+                html;
+
+
+        } catch (error) {
+
+            console.error(
+                "Calendar Error:",
+                error
+            );
+
+
+            alert(
+                "Calendar Error: " +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    // --------------------------------
+    // DELETE HABIT
+    // --------------------------------
+
+    async function deleteHabit(id) {
+
+        if (
+            !confirm(
+                "Delete this habit?"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/${id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                let data = {};
+
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch (e) {
+
+                }
+
+
+                throw new Error(
+                    data.message ||
+                    "Unable to delete habit"
+                );
+
+            }
+
+
+            alert(
+                "Habit deleted successfully."
+            );
+
+
+            loadHabits();
+
+
+        } catch (error) {
+
+            alert(error.message);
+
+        }
+
+    }
+
+
+    // --------------------------------
+    // LOCAL DATE
+    // --------------------------------
+
+    function getLocalDate() {
+
+        const date =
+            new Date();
+
+        const year =
+            date.getFullYear();
+
+        const month =
+            String(
+                date.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                date.getDate()
+            ).padStart(2, "0");
+
+
+        return `${year}-${month}-${day}`;
+
+    }
+
+
+    // --------------------------------
+    // HTML ESCAPE
+    // --------------------------------
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>
